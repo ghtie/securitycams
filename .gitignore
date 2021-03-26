@@ -3,3 +3,4 @@
 .DS_STORE
 .vscode/
 /image_captures
+__pycache__
