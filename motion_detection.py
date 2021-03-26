@@ -29,6 +29,9 @@ class MotionDetection:
         if not np.all(thresh_frames == 0):
             # get image contours
             self.motion_capture(img, thresh_frames)
+            return True
+        else:
+            return False
 
     def motion_capture(self, img, thresh_frames):
         """

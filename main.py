@@ -27,8 +27,13 @@ while True:
     gray_2 = cv2.GaussianBlur(gray_2, (21, 21), 0)
 
     # Motion detection
-    motion_1.motion_detection(gray_1)
-    motion_2.motion_detection(gray_2)
+    detect_1 = motion_1.motion_detection(gray_1)
+    detect_2 = motion_2.motion_detection(gray_2)
+
+    """
+    if detect_1 or detect_2:
+        Add alarm triggers/functions here
+    """
 
     # Display the camera feeds
     cv2.imshow('Camera Feed 1', gray_1)
