@@ -1,4 +1,5 @@
 import time
+import os
 import cv2
 import PySimpleGUI as sg
 import pathlib
@@ -18,7 +19,7 @@ colslayout = [colwebcam1, colwebcam2]
 rowfooter = [sg.Image(filename="", key="-IMAGEBOTTOM-")]
 layout = [colslayout,
         rowfooter,
-        [sg.FileBrowse(button_text="See Images Displaying Motion", font=('any', 16), initial_folder=pathlib.Path().absolute())],
+        [sg.FileBrowse(button_text="See Images Displaying Motion", font=('any', 16), initial_folder=pathlib.Path().absolute() / 'image_captures')],
         [sg.Text("Log of Detected Motion", font=('any', 25))],
         [sg.Multiline("---- MOTION DETECTION LOG ---\n", size = (97, 25), font=('any', 16), key="LOG")]]
 
@@ -27,7 +28,15 @@ right_click_menu = ['Unused', ['&FPS', '---', 'Menu A', 'Menu B', 'Menu C', ['Me
 window = sg.Window("Security Cameras", layout,
                    right_click_menu=right_click_menu,
                    no_titlebar=False, alpha_channel=1, grab_anywhere=False,
-                   return_keyboard_events=True, location=(100, 100))
+                   return_keyboard_events=True, location=(100, 100), finalize=True)
+
+# populate the initial motion log
+directory = pathlib.Path().absolute() / 'image_captures'
+files = os.listdir(directory)
+for filename in files:
+    if filename.endswith(".jpg") or filename.endswith(".png"):
+        l = filename.split('_')
+        window["LOG"].print(l[0] + ' detected motion at ' + l[1].split('.')[0])
 
 # Camera Settings
 camera_Width = 480  # 640 # 1024 # 1280
@@ -60,8 +69,6 @@ while True:
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, fpsInfo, (10, 20), font, 0.4, (255, 255, 255), 1)
 
-    window["LOG"].print('test')
-
     # update webcam1
     imgbytes = cv2.imencode(".png", frame)[1].tobytes()
     window["cam1"].update(data=imgbytes)
@@ -69,6 +76,9 @@ while True:
     # update webcam2
     imgbytes2 = cv2.imencode(".png", frame2)[1].tobytes()
     window["cam2"].update(data=imgbytes2)
+
+    #update Motion detection log
+    window["LOG"].print('test')
 
 video_capture.release()
 video_capture2.release()
