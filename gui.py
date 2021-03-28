@@ -16,7 +16,11 @@ colwebcam2 = sg.Column(colwebcam2_layout, element_justification='center')
 colslayout = [colwebcam1, colwebcam2]
 
 rowfooter = [sg.Image(filename="", key="-IMAGEBOTTOM-")]
-layout = [colslayout, rowfooter, [sg.Text("See Images Displaying Motion"), sg.FileBrowse(initial_folder=pathlib.Path().absolute())]]
+layout = [colslayout,
+        rowfooter,
+        [sg.FileBrowse(button_text="See Images Displaying Motion", font=('any', 16), initial_folder=pathlib.Path().absolute())],
+        [sg.Text("Log of Detected Motion", font=('any', 25))],
+        [sg.Multiline("---- MOTION DETECTION LOG ---\n", size = (97, 25), font=('any', 16), key="LOG")]]
 
 right_click_menu = ['Unused', ['&FPS', '---', 'Menu A', 'Menu B', 'Menu C', ['Menu C1', 'Menu C2'], '---', 'Exit']]
 
@@ -55,6 +59,8 @@ while True:
         fpsInfo = "FPS: " + str(1.0 / (time.time() - start_time))  # FPS = 1 / time to process loop
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, fpsInfo, (10, 20), font, 0.4, (255, 255, 255), 1)
+
+    window["LOG"].print('test')
 
     # update webcam1
     imgbytes = cv2.imencode(".png", frame)[1].tobytes()
