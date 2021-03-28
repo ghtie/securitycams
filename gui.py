@@ -1,26 +1,26 @@
 import time
 import cv2
 import PySimpleGUI as sg
+import pathlib
 
 # init Windows Manager
 sg.theme("DarkBlue")
 
 # def webcam col
-colwebcam1_layout = [[sg.Text("Camera View", size=(60, 1), justification="center")],
-                     [sg.Image(filename="", key="cam1")]]
+colwebcam1_layout = [[sg.Text("Camera View 1", size=(60, 1), justification="center")],[sg.Image(filename="", key="cam1")]]
 colwebcam1 = sg.Column(colwebcam1_layout, element_justification='center')
 
-colwebcam2_layout = [[sg.Text("Camera View GrayScale", size=(60, 1), justification="center")],
-                     [sg.Image(filename="", key="cam1gray")]]
+colwebcam2_layout = [[sg.Text("Camera View 2", size=(60, 1), justification="center")],
+                     [sg.Image(filename="", key="cam2")]]
 colwebcam2 = sg.Column(colwebcam2_layout, element_justification='center')
 colslayout = [colwebcam1, colwebcam2]
 
 rowfooter = [sg.Image(filename="", key="-IMAGEBOTTOM-")]
-layout = [colslayout, rowfooter]
+layout = [colslayout, rowfooter, [sg.Text("See Images Displaying Motion"), sg.FileBrowse(initial_folder=pathlib.Path().absolute())]]
 
 right_click_menu = ['Unused', ['&FPS', '---', 'Menu A', 'Menu B', 'Menu C', ['Menu C1', 'Menu C2'], '---', 'Exit']]
 
-window = sg.Window("El Bruno - Webcams and GrayScale with PySimpleGUI", layout,
+window = sg.Window("Security Cameras", layout,
                    right_click_menu=right_click_menu,
                    no_titlebar=False, alpha_channel=1, grab_anywhere=False,
                    return_keyboard_events=True, location=(100, 100))
@@ -62,7 +62,7 @@ while True:
 
     # update webcam2
     imgbytes2 = cv2.imencode(".png", frame2)[1].tobytes()
-    window["cam1gray"].update(data=imgbytes2)
+    window["cam2"].update(data=imgbytes2)
 
 video_capture.release()
 video_capture2.release()
