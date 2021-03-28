@@ -1,13 +1,14 @@
 import cv2
 import imutils
 import numpy as np
-from datetime import datetime
+import time
 
 
 class MotionDetection:
-    def __init__(self, threshold=50, img_capture='image_captures/'):
+    def __init__(self, threshold=50, cam_name="cam1", img_capture='image_captures/'):
         # threshold sets the min difference between the avg_img and the current frame
         self.threshold = threshold
+        self.cam = cam_name
         self.img_capture = img_capture
         self.avg_img = None
 
@@ -29,9 +30,6 @@ class MotionDetection:
         if not np.all(thresh_frames == 0):
             # get image contours
             self.motion_capture(img, thresh_frames)
-            return True
-        else:
-            return False
 
     def motion_capture(self, img, thresh_frames):
         """
@@ -47,6 +45,5 @@ class MotionDetection:
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
                 # create screenshots for user to review later
-                now = datetime.now()
-                img_name = self.img_capture + now.strftime("%m-%d-%Y-%H:%M:%S") + '.jpg'
+                img_name = self.img_capture + self.cam + "_" + str(time.time()) + '.jpg'
                 cv2.imwrite(img_name, img)
