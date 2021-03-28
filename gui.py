@@ -32,7 +32,7 @@ window = sg.Window("Security Cameras", layout,
 
 # populate the initial motion log
 directory = pathlib.Path().absolute() / 'image_captures'
-files = os.listdir(directory)
+files = set(os.listdir(directory))
 for filename in files:
     if filename.endswith(".jpg") or filename.endswith(".png"):
         l = filename.split('_')
@@ -78,7 +78,7 @@ while True:
     window["cam2"].update(data=imgbytes2)
 
     #update Motion detection log
-    window["LOG"].print('test')
+    # todo compare files set to set at time of loop, print diff
 
 video_capture.release()
 video_capture2.release()
