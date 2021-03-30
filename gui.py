@@ -36,7 +36,8 @@ files = set(os.listdir(directory))
 for filename in files:
     if filename.endswith(".jpg") or filename.endswith(".png"):
         l = filename.split('_')
-        window["LOG"].print(l[0] + ' detected motion at ' + l[1].split('.')[0])
+        date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(l[1].split('.')[0])))
+        window["LOG"].print(l[0] + ' detected motion at ' + date)
 
 # Camera Settings
 camera_Width = 480  # 640 # 1024 # 1280
@@ -78,7 +79,13 @@ while True:
     window["cam2"].update(data=imgbytes2)
 
     #update Motion detection log
-    # todo compare files set to set at time of loop, print diff
+    current_files = set(os.listdir(directory))
+    for filename in (current_files - files):
+        if filename.endswith(".jpg") or filename.endswith(".png"):
+            l = filename.split('_')
+            date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(l[1].split('.')[0]))
+            window["LOG"].print(l[0] + ' detected motion at ' + date)
+    files = current_files
 
 video_capture.release()
 video_capture2.release()
