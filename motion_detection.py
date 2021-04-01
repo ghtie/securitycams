@@ -2,15 +2,18 @@ import cv2
 import imutils
 import numpy as np
 import time
+import os
+import glob
 
 
 class MotionDetection:
-    def __init__(self, threshold=50, cam_name="cam1", img_capture='image_captures/'):
+    def __init__(self, threshold=50, cam_name="cam1", img_folder='image_captures/'):
         # threshold sets the min difference between the avg_img and the current frame
         self.threshold = threshold
         self.cam = cam_name
-        self.img_capture = img_capture
+        self.img_folder = img_folder
         self.avg_img = None
+        self.motion_time = None  # saves the most recent timestamp of a detected motion
 
     def motion_detection(self, img):
         """
@@ -31,6 +34,31 @@ class MotionDetection:
             # get image contours
             self.motion_capture(img, thresh_frames)
 
+    def save_image(self, img):
+        """
+        Saves and groups the images by consecutive movements captured in the videos
+        """
+        # get list of all directories
+        dir_list = glob.glob(os.path.join('image_captures/', '*'))
+        curr_time = time.time()
+        timestamp = ""
+        if not dir_list:
+            timestamp = time.time()
+            os.mkdir(self.img_folder + str(timestamp) + "/")
+        else:
+            # get the most recent directory created
+            recent_dir = max([dir for dir in dir_list], key=os.path.getmtime)
+            last_timestamp = float(recent_dir.lstrip().split('/')[-1])
+            # create a new folder if more than 10s time passed between the current frame detected and the folder created
+            if curr_time - last_timestamp > 10:
+                timestamp = curr_time
+                os.mkdir(self.img_folder + str(timestamp) + "/")
+            else:
+                timestamp = last_timestamp
+
+        file_loc = self.img_folder + str(timestamp) + "/" + self.cam + "_" + str(time.time()) + '.jpg'
+        cv2.imwrite(file_loc, img)
+
     def motion_capture(self, img, thresh_frames):
         """
         Creates screenshots from frames that have detected motion
@@ -43,7 +71,6 @@ class MotionDetection:
             if cv2.contourArea(contour) > 5000:
                 (x, y, w, h) = cv2.boundingRect(contour)
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
                 # create screenshots for user to review later
-                img_name = self.img_capture + self.cam + "_" + str(time.time()) + '.jpg'
-                cv2.imwrite(img_name, img)
+                self.save_image(img)
+
