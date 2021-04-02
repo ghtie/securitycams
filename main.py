@@ -4,13 +4,13 @@ from motion_detection import MotionDetection
 from video_frames import VideoFrames
 
 # Start the cameras
-cam_1 = VideoFrames(0).start() #cv2.VideoCapture(0)
-cam_2 = VideoFrames(1).start() #cv2.VideoCapture(1)
+cam_1 = VideoFrames(0).start()
+cam_2 = VideoFrames(1).start()
 time.sleep(3)
 
 # Initialize motion detection
-motion_1 = MotionDetection(cam_name="cam1", img_capture='image_captures/cam1/')
-motion_2 = MotionDetection(cam_name="cam2", img_capture='image_captures/cam2/')
+motion_1 = MotionDetection(cam_name="cam1", img_folder='image_captures/')
+motion_2 = MotionDetection(cam_name="cam2", img_folder='image_captures/')
 
 
 while True:
@@ -20,8 +20,6 @@ while True:
         break
 
     # Camera frames
-    # ret_1, frame1 = cam_1.read()
-    # ret_2, frame2 = cam_2.read()
     frame1 = cam_1.frame
     frame2 = cam_2.frame
 
