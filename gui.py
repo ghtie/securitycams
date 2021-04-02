@@ -6,12 +6,11 @@ import pathlib
 
 def log_movement(window, old_set, new_set):
     directory = pathlib.Path().absolute() / 'image_captures'
-    files = set(os.listdir(directory))
+    print(new_set)
     for filename in (new_set - old_set):
-        if filename.endswith(".jpg") or filename.endswith(".png"):
-            l = filename.split('_')
-            date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(l[1].split('.')[0])))
-            window["LOG"].print(l[0] + ' detected motion at ' + date)
+        l = filename.split('.')
+        date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(l[0])))
+        window["LOG"].print('Detected motion at ' + date)
 
 
 def main():
@@ -43,7 +42,7 @@ def main():
                     return_keyboard_events=True, location=(100, 100), finalize=True)
 
     # populate the initial motion log
-    files = set(os.listdir(directory))
+    files = set([name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))])
     log_movement(window, set(), files)
 
     # Camera Settings
@@ -86,7 +85,7 @@ def main():
         window["cam2"].update(data=imgbytes2)
 
         #update Motion detection log
-        files_new = set(os.listdir(directory))
+        files_new = set([name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))])
         log_movement(window, files, files_new)
         files = files_new
 
