@@ -4,3 +4,4 @@
 .vscode/
 /image_captures
 __pycache__
+twilio.env

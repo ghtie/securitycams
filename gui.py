@@ -3,15 +3,29 @@ import os
 import cv2
 import PySimpleGUI as sg
 import pathlib
+import glob
+from text import send_message
 
 
-def log_movement(window, old_set, new_set):
+def log_past_movement(window, folders):
     directory = pathlib.Path().absolute() / 'image_captures'
-    print(new_set)
-    for filename in (new_set - old_set):
-        l = filename.split('.')
-        date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(l[0])))
-        window["LOG"].print('Detected motion at ' + date)
+    for dir in folders:
+        dt = directory / dir
+        onlyfiles = [os.path.basename(x) for x in glob.glob(str(dt) + "/*.jpg")]
+        times = [time.localtime(int(f.split('_')[1].split('.')[0])) for f in onlyfiles]
+        minimum = time.strftime('%Y-%m-%d %H:%M:%S', min(times))
+        maximum = time.strftime('%Y-%m-%d %H:%M:%S', max(times))
+        window["LOG"].print('Detected motion from ' + str(minimum) + ' to ' + str(maximum))
+
+
+def check_new_folder(window, folders_old, folders_new):
+    directory = pathlib.Path().absolute() / 'image_captures'
+    for dir in (folders_new - folders_old):
+        l = dir.split('.')[0]
+        message = 'Detected motion at ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(l)))
+        window["LOG"].print(message)
+        # uncomment when you want to send texts
+        #send_message(message)
 
 
 def main():
@@ -44,14 +58,14 @@ def main():
                        return_keyboard_events=True, location=(100, 100), finalize=True)
 
     # populate the initial motion log
-    files = set([name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))])
-    log_movement(window, set(), files)
+    folders = set([name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))])
+    log_past_movement(window, folders)
 
     # Camera Settings
     camera_width = 480  # 640 # 1024 # 1280
     camera_height = 320  # 480 # 780  # 960
     frame_size = (camera_width, camera_height)
-    video_capture = cv2.VideoCapture(1)
+    video_capture = cv2.VideoCapture(0)
     video_capture2 = cv2.VideoCapture(0)
     time.sleep(2.0)
 
@@ -87,9 +101,9 @@ def main():
         window["cam2"].update(data=imgbytes2)
 
         #update Motion detection log
-        files_new = set([name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))])
-        log_movement(window, files, files_new)
-        files = files_new
+        folders_new = set([name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))])
+        check_new_folder(window, folders, folders_new)
+        folders = folders_new
 
     video_capture.release()
     video_capture2.release()
