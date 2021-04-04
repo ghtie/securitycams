@@ -8,6 +8,7 @@ auth_token = os.environ['TWILIO_AUTH_TOKEN']
 
 client = Client(account_sid, auth_token)
 
+
 def send_message(message):
     client.api.account.messages.create(
         to="+14193448709",

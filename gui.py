@@ -4,7 +4,10 @@ import cv2
 import PySimpleGUI as sg
 import pathlib
 import glob
-from text import send_message
+from security import SecuritySystem
+
+cam1_src = 0
+cam2_src = 1
 
 
 def log_past_movement(window, folders):
@@ -65,9 +68,12 @@ def main():
     camera_width = 480  # 640 # 1024 # 1280
     camera_height = 320  # 480 # 780  # 960
     frame_size = (camera_width, camera_height)
-    video_capture = cv2.VideoCapture(0)
-    video_capture2 = cv2.VideoCapture(0)
+    video_capture = cv2.VideoCapture(cam1_src)
+    video_capture2 = cv2.VideoCapture(cam2_src)
     time.sleep(2.0)
+
+    # Start the surveillance system
+    security_sys = SecuritySystem(cam1_src=cam1_src, cam2_src=cam2_src)
 
     display_fps = False
     while True:
@@ -100,11 +106,12 @@ def main():
         imgbytes2 = cv2.imencode(".png", frame2)[1].tobytes()
         window["cam2"].update(data=imgbytes2)
 
-        #update Motion detection log
+        # update Motion detection log
         folders_new = set([name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))])
         check_new_folder(window, folders, folders_new)
         folders = folders_new
 
+    security_sys.stop_surveillance()
     video_capture.release()
     video_capture2.release()
     cv2.destroyAllWindows()
