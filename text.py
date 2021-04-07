@@ -11,6 +11,6 @@ client = Client(account_sid, auth_token)
 
 def send_message(message):
     client.api.account.messages.create(
-        to="+14193448709",
+        to="+13305548936",
         from_="+13059210617",
         body=message)
