@@ -1,5 +1,4 @@
 import threading
-import time
 from frame_analyzer import FrameAnalyzer
 from video_frames import VideoFrames
 from human_detection import HumanDetector
@@ -8,17 +7,15 @@ from human_detection import HumanDetector
 class SecuritySystem:
     def __init__(self, cam1_src=0, cam2_src=1, img_folder='image_captures/', threshold=0.7):
         # Load Human detection API
-        self.human_detector = HumanDetector('frozen_inference_graph.pb')
-        self.threshold = threshold
+        self.human_detector = HumanDetector(threshold=threshold)
 
         # Start the cameras
         self.cam_1 = VideoFrames(cam1_src).start()
         self.cam_2 = VideoFrames(cam2_src).start()
-        time.sleep(2)
 
         # Initialize frame analyzers
-        self.motion_1 = FrameAnalyzer(cam_name="cam1", img_folder=img_folder, model_threshold=threshold)
-        self.motion_2 = FrameAnalyzer(cam_name="cam2", img_folder=img_folder, model_threshold=threshold)
+        self.motion_1 = FrameAnalyzer(cam_name="cam1", img_folder=img_folder, human_detector=self.human_detector)
+        self.motion_2 = FrameAnalyzer(cam_name="cam2", img_folder=img_folder, human_detector=self.human_detector)
 
         self.stopped = False
         self.thread = threading.Thread(target=self.start_surveillance, args=()).start()
