@@ -19,15 +19,23 @@ class HumanDetector:
         self.tensor = self.graph.get_tensor_by_name('image_tensor:0')
         self.scores = self.graph.get_tensor_by_name('detection_scores:0')
         self.classes = self.graph.get_tensor_by_name('detection_classes:0')
+        self.boxes = self.graph.get_tensor_by_name('detection_boxes:0')
 
-    def is_human(self, img):
+    def detect(self, img):
         image_np_expanded = np.expand_dims(img, axis=0)
-        (scores, classes) = self.session.run([self.scores, self.classes], feed_dict={self.tensor: image_np_expanded})
+        (scores, classes, boxes) = self.session.run([self.scores, self.classes, self.boxes], feed_dict={self.tensor: image_np_expanded})
         scores = scores[0].tolist()
         classes = [int(x) for x in classes[0].tolist()]
 
-        # Filter for humans only with confidence scores > threshold
-        return [scores[x] for x in range(len(scores)) if classes[x] == 1 and scores[x] > self.threshold] != []
+        im_height, im_width, _ = img.shape
+        boxes_list = []
+        for i in range(len(classes)):
+            if classes[i] == 1 and scores[i] > self.threshold:  # Filter for humans only with confidence > 70%
+                boxes_list.append((int(boxes[0, i, 0] * im_height),
+                                 int(boxes[0, i, 1] * im_width),
+                                 int(boxes[0, i, 2] * im_height),
+                                 int(boxes[0, i, 3] * im_width)))
+        return boxes_list
 
     def close(self):
         self.session.close()

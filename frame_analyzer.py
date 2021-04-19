@@ -33,6 +33,7 @@ class FrameAnalyzer:
         thresh_frames = cv2.threshold(diff_frames, self.threshold, 255, cv2.THRESH_BINARY)[1]
         thresh_frames = cv2.dilate(thresh_frames, None, iterations=2)
 
+        # TODO: SET THRESHOLD
         if not np.all(thresh_frames == 0):
             # check for any human detection
             self.human_detection(img)
@@ -43,9 +44,13 @@ class FrameAnalyzer:
         :param img: current image/frame
         :return:
         """
-        if self.human_detector.is_human(img):
-            #print('human detected:' + str(time.time()))
-            self.save_image(img, time.time())
+        boxes = self.human_detector.detect(img)
+        if boxes:
+            for i in range(len(boxes)):
+                print("Human detected at: " + str(time.time()))
+                box = boxes[i]
+                cv2.rectangle(img, (box[1], box[0]), (box[3], box[2]), (255, 0, 0), 2)
+                self.save_image(img, time.time())
 
     def save_image(self, img, img_timestamp):
         """
