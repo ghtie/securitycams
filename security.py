@@ -1,4 +1,5 @@
 import threading
+import cv2
 from frame_analyzer import FrameAnalyzer
 from video_frames import VideoFrames
 from human_detection import HumanDetector

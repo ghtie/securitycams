@@ -8,7 +8,7 @@ from security import SecuritySystem
 from text import send_message
 
 cam1_src = 0
-cam2_src = 1
+cam2_src = 0
 
 
 def log_past_movement(window, folders):
@@ -29,7 +29,7 @@ def check_new_folder(window, folders_old, folders_new):
         message = 'Detected motion at ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(l)))
         window["LOG"].print(message)
         # uncomment when you want to send texts
-        # send_message(message)
+        #send_message(message)
 
 
 def main():

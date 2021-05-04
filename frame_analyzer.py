@@ -14,6 +14,7 @@ class FrameAnalyzer:
         self.img_folder = img_folder
         self.avg_img = None
         self.human_detector = human_detector  # ML model for human detection
+        self.human_approaching_threshold = 300000
 
     def motion_detection(self, img):
         """
@@ -33,24 +34,38 @@ class FrameAnalyzer:
         thresh_frames = cv2.threshold(diff_frames, self.threshold, 255, cv2.THRESH_BINARY)[1]
         thresh_frames = cv2.dilate(thresh_frames, None, iterations=2)
 
-        # TODO: SET THRESHOLD
         if not np.all(thresh_frames == 0):
             # check for any human detection
             self.human_detection(img)
 
     def human_detection(self, img):
         """
-        Uses the TensorFlow Detector API to detect humans in the frames
+        Uses the model classifier to detect humans in the frames and create image captures
         :param img: current image/frame
-        :return:
         """
         boxes = self.human_detector.detect(img)
         if boxes:
             for i in range(len(boxes)):
-                print("Human detected at: " + str(time.time()))
-                box = boxes[i]
-                cv2.rectangle(img, (box[1], box[0]), (box[3], box[2]), (255, 0, 0), 2)
-                self.save_image(img, time.time())
+                # DEMO ONLY
+                print("HUMAN DETECTED: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+                x, y, w, h = boxes[i][1], boxes[i][0], boxes[i][3] - boxes[i][1], boxes[i][2] - boxes[i][0]
+                if self.is_approaching_human(w, h):
+                    cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+                    self.save_image(img, time.time())
+                    # DEMO ONLY
+                    print("APPROACHING HUMAN: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+                else: # DEMO ONLY
+                    print("PASSING HUMAN: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+        else: # DEMO ONLY
+            print("MOTION DETECTED: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+
+    def is_approaching_human(self, w, h):
+        """
+        Calculates the area of the bounding box around the detected human in the frame
+        :return: True if the human is approaching the camera
+        """
+        print(w * h)
+        return w * h > self.human_approaching_threshold
 
     def save_image(self, img, img_timestamp):
         """
