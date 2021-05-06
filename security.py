@@ -15,8 +15,8 @@ class SecuritySystem:
         self.cam_2 = VideoFrames(cam2_src).start()
 
         # Initialize frame analyzers
-        self.motion_1 = FrameAnalyzer(cam_name="cam1", img_folder=img_folder, human_detector=self.human_detector)
-        self.motion_2 = FrameAnalyzer(cam_name="cam2", img_folder=img_folder, human_detector=self.human_detector)
+        self.analyzer_1 = FrameAnalyzer(cam_name="cam1", img_folder=img_folder, human_detector=self.human_detector)
+        self.analyzer_2 = FrameAnalyzer(cam_name="cam2", img_folder=img_folder, human_detector=self.human_detector)
 
         self.stopped = False
         self.thread = threading.Thread(target=self.start_surveillance, args=()).start()
@@ -33,5 +33,5 @@ class SecuritySystem:
             frame2 = self.cam_2.frame
 
             # Analyze frames
-            self.motion_1.motion_detection(frame1)
-            self.motion_2.motion_detection(frame2)
+            self.analyzer_1.motion_detection(frame1)
+            self.analyzer_2.motion_detection(frame2)

@@ -14,7 +14,7 @@ class FrameAnalyzer:
         self.img_folder = img_folder
         self.avg_img = None
         self.human_detector = human_detector  # ML model for human detection
-        self.human_approaching_threshold = 300000
+        self.human_approaching_threshold = 50000
 
     def motion_detection(self, img):
         """

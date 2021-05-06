@@ -22,6 +22,9 @@ class HumanDetector:
         self.boxes = self.graph.get_tensor_by_name('detection_boxes:0')
 
     def detect(self, img):
+        """
+        Method for detecting human objects in images
+        """
         image_np_expanded = np.expand_dims(img, axis=0)
         (scores, classes, boxes) = self.session.run([self.scores, self.classes, self.boxes], feed_dict={self.tensor: image_np_expanded})
         scores = scores[0].tolist()
@@ -36,6 +39,20 @@ class HumanDetector:
                                  int(boxes[0, i, 2] * im_height),
                                  int(boxes[0, i, 3] * im_width)))
         return boxes_list
+
+    def predict(self, img):
+        """
+        Method for testing model accuracy
+        """
+        image_np_expanded = np.expand_dims(img, axis=0)
+        (scores, classes, boxes) = self.session.run([self.scores, self.classes, self.boxes], feed_dict={self.tensor: image_np_expanded})
+        scores = scores[0].tolist()
+        classes = [int(x) for x in classes[0].tolist()]
+
+        for i in range(len(classes)):
+            if classes[i] == 1 and scores[i] > self.threshold:  # Filter for humans only with confidence > 70%
+                return 1
+        return 0
 
     def close(self):
         self.session.close()

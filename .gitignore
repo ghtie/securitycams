@@ -6,4 +6,4 @@ __pycache__
 twilio.env
 
 /image_captures
-/model/*
+/test_images/
