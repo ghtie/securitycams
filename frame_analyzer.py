@@ -51,11 +51,11 @@ class FrameAnalyzer:
                 if self.is_approaching_human(w, h):
                     cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
                     self.save_image(img, time.time())
-                    cv2.putText(img, 'APPROACHING HUMAN', (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
+                    cv2.putText(img, 'APPROACHING HUMAN', (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
                 else:
-                    cv2.putText(img, 'PASSING HUMAN', (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
+                    cv2.putText(img, 'PASSING HUMAN', (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
         else:
-            cv2.putText(img, 'MOTION DETECTED', (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
+            cv2.putText(img, 'MOTION DETECTED', (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
         return img
 
     def is_approaching_human(self, w, h):

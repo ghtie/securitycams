@@ -9,7 +9,7 @@ from text import send_message
 from video_frames import VideoFrames
 
 cam1_src = 0
-cam2_src = 0
+cam2_src = 1
 
 
 def log_past_movement(window, folders):
