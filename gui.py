@@ -6,6 +6,7 @@ import pathlib
 import glob
 from security import SecuritySystem
 from text import send_message
+from video_frames import VideoFrames
 
 cam1_src = 0
 cam2_src = 0
@@ -29,7 +30,7 @@ def check_new_folder(window, folders_old, folders_new):
         message = 'Detected motion at ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(l)))
         window["LOG"].print(message)
         # uncomment when you want to send texts
-        #send_message(message)
+        # send_message(message)
 
 
 def main():
@@ -38,11 +39,11 @@ def main():
 
     # def webcam col
     col_webcam1_layout = [[sg.Text("Camera View 1", size=(60, 1), justification="center")],
-                         [sg.Image(filename="", key="cam1")]]
+                          [sg.Image(filename="", key="cam1")]]
     col_webcam1 = sg.Column(col_webcam1_layout, element_justification='center')
 
     col_webcam2_layout = [[sg.Text("Camera View 2", size=(60, 1), justification="center")],
-                         [sg.Image(filename="", key="cam2")]]
+                          [sg.Image(filename="", key="cam2")]]
     col_webcam2 = sg.Column(col_webcam2_layout, element_justification='center')
     cols_layout = [col_webcam1, col_webcam2]
 
@@ -69,12 +70,12 @@ def main():
     camera_width = 480  # 640 # 1024 # 1280
     camera_height = 320  # 480 # 780  # 960
     frame_size = (camera_width, camera_height)
-    video_capture = cv2.VideoCapture(cam1_src)
-    video_capture2 = cv2.VideoCapture(cam2_src)
+    video_capture = VideoFrames(cam1_src).start()
+    video_capture2 = VideoFrames(cam2_src).start()
     time.sleep(2.0)
 
     # Start the surveillance system
-    security_sys = SecuritySystem(cam1_src=cam1_src, cam2_src=cam2_src)
+    security_sys = SecuritySystem()
 
     display_fps = False
     while True:
@@ -88,16 +89,25 @@ def main():
             display_fps = not display_fps
 
         # get camera frame
-        ret, frame_orig = video_capture.read()
+        frame_orig = video_capture.frame
         frame = cv2.resize(frame_orig, frame_size)
-
-        ret2, frame_orig2 = video_capture2.read()
+        frame_orig2 = video_capture2.frame
         frame2 = cv2.resize(frame_orig2, frame_size)
 
         if (display_fps == True) and (time.time() - start_time) > 0:
             fps_info = "FPS: " + str(1.0 / (time.time() - start_time))  # FPS = 1 / time to process loop
             font = cv2.FONT_HERSHEY_DUPLEX
             cv2.putText(frame, fps_info, (10, 20), font, 0.4, (255, 255, 255), 1)
+
+        # Analyze frames
+        detection1, detection2 = security_sys.analyze_frames(frame, frame2)
+
+        # DEMO ONLY
+        if detection1 is not None:
+            frame = cv2.resize(detection1, frame_size)
+
+        if detection2 is not None:
+            frame2 = cv2.resize(detection2, frame_size)
 
         # update webcam1
         imgbytes = cv2.imencode(".png", frame)[1].tobytes()
@@ -107,14 +117,14 @@ def main():
         imgbytes2 = cv2.imencode(".png", frame2)[1].tobytes()
         window["cam2"].update(data=imgbytes2)
 
+
         # update Motion detection log
         folders_new = set([name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))])
         check_new_folder(window, folders, folders_new)
         folders = folders_new
 
-    security_sys.stop_surveillance()
-    video_capture.release()
-    video_capture2.release()
+    video_capture.stop()
+    video_capture2.stop()
     cv2.destroyAllWindows()
 
 
