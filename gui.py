@@ -51,8 +51,8 @@ def main():
     layout = [cols_layout,
               footer,
               [sg.FileBrowse(button_text="See Images Displaying Motion", font=('any', 16), initial_folder=directory)],
-              [sg.Text("Log of Detected Motion", font=('any', 25))],
-              [sg.Multiline("---- MOTION DETECTION LOG ---\n", size=(97, 25), font=('any', 16), key="LOG")]]
+              [sg.Text("Log of Detected Human Motion", font=('any', 25))],
+              [sg.Multiline("---- HUMAN DETECTION LOG ---\n", size=(97, 25), font=('any', 16), key="LOG")]]
 
     right_click_menu = ['Unused', ['&FPS', '---', 'Menu A', 'Menu B', 'Menu C', ['Menu C1', 'Menu C2'], '---', 'Exit']]
 

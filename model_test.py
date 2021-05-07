@@ -1,42 +1,26 @@
 import os
 import csv
 import numpy as np
-import sklearn
 from PIL import Image
 from human_detection import HumanDetector
-from sklearn.metrics import precision_score, accuracy_score
+import sklearn.metrics as metrics
 
 human_detector = HumanDetector()
-human_labels = "test_images/human_vs_nonhuman/labels.csv"
-ped_labels = "test_images/pedestrian/labels.csv"
 
 
-def create_labels():
-    # HUMAN VS NONHUMAN DATASET (Source: https://www.kaggle.com/aliasgartaksali/human-and-non-human)
+# HUMAN VS NONHUMAN DATASET: https://www.kaggle.com/aliasgartaksali/human-and-non-human
+# HUMANS WITH MASKS DATASET: https://www.kaggle.com/bikashjaiswal/dataset-for-mask-nonmask-and-nonhuman-classes
+def create_labels(source_dir, label_file):
     dir_list = ["non-humans", "humans"]
-    source_dir = "test_images/human_vs_nonhuman"
-
-    with open(ped_labels, 'w') as labels_file:
-        writer = csv.DictWriter(labels_file, fieldnames=['filename', 'label'])
-
+    with open(label_file, 'w') as file:
+        writer = csv.DictWriter(file, fieldnames=['filename', 'label'])
         for i in range(2):
-            files = os.listdir(source_dir + "/" + dir_list[i])
+            files = os.listdir(source_dir + '/' + dir_list[i])
             for f in files:
                 writer.writerow({'filename': f, 'label': i})
 
-    # PEDESTRIAN DATASET (Source: https://www.kaggle.com/sudipdas/pedestriandataset)
-    source_dir = "test_images/pedestrian/humans"
 
-    # Create csv files of each image classification
-    with open(human_labels, mode='w') as labels_file:
-        writer = csv.DictWriter(labels_file, fieldnames=['filename', 'label'])
-
-        files = os.listdir(source_dir)
-        for f in files:
-            writer.writerow({'filename': f, 'label': 1})
-
-
-# Create a 2D array of each image and its classification: 0 = nonhuman, 1 = human
+# Create a 2D array of each image and its classification: 0 = nonhuman, 1 = humans
 def create_tables(labels_file):
     file = open(labels_file, 'r')
     reader = csv.reader(file, delimiter=',')
@@ -58,8 +42,8 @@ def create_summary(table_list, img_dir_list, summary_file):
             predictions.append(human_detector.predict(img))
 
         # get metric summary
-        accuracy = sklearn.metrics.accuracy_score(actual, predictions)
-        precision = sklearn.metrics.precision_score(actual, predictions)
+        accuracy = metrics.accuracy_score(actual, predictions)
+        precision = metrics.precision_score(actual, predictions)
 
         file = open(summary_file, 'a')
         file.write('Accuracy: ' + str(accuracy) + os.linesep)
@@ -68,8 +52,9 @@ def create_summary(table_list, img_dir_list, summary_file):
 
 
 if __name__ == "__main__":
-    # create_labels()
-    human_table = create_tables(human_labels)
-    ped_table = create_tables(ped_labels)
-
-    create_summary([human_table, ped_table], ["test_images/human_vs_nonhuman/combined/", "test_images/pedestrian/humans/"], "summary.txt")
+    human_labels = "test_images/human_vs_nonhuman/labels.csv"
+    mask_labels = "test_images/masks/labels.csv"
+    # create_labels("test_images/masks", mask_labels)
+    # human_table = create_tables(human_labels)
+    mask_table = create_tables(mask_labels)
+    create_summary([mask_table], ["test_images/masks/combined/"], "summary.txt")

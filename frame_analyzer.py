@@ -13,7 +13,7 @@ class FrameAnalyzer:
         self.cam = cam_name
         self.img_folder = img_folder
         self.avg_img = None
-        self.human_detector = human_detector  # ML model for human detection
+        self.human_detector = human_detector  # ML model for humans detection
         self.human_approaching_threshold = 50000
 
     def motion_detection(self, img):
@@ -35,7 +35,7 @@ class FrameAnalyzer:
         thresh_frames = cv2.dilate(thresh_frames, None, iterations=2)
 
         if not np.all(thresh_frames == 0):
-            # check for any human detection
+            # check for any humans detection
             self.human_detection(img)
 
     def human_detection(self, img):
@@ -61,8 +61,8 @@ class FrameAnalyzer:
 
     def is_approaching_human(self, w, h):
         """
-        Calculates the area of the bounding box around the detected human in the frame
-        :return: True if the human is approaching the camera
+        Calculates the area of the bounding box around the detected humans in the frame
+        :return: True if the humans is approaching the camera
         """
         print(w * h)
         return w * h > self.human_approaching_threshold

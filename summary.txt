@@ -1,2 +1,7 @@
+Regular Dataset:
 Accuracy: 0.7914065369078223
 Precision: 0.9953161592505855
+
+Masks Dataset:
+Accuracy: 0.8871839581517
+Precision: 0.6848739495798319

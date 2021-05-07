@@ -23,7 +23,7 @@ class HumanDetector:
 
     def detect(self, img):
         """
-        Method for detecting human objects in images
+        Method for detecting humans objects in images
         """
         image_np_expanded = np.expand_dims(img, axis=0)
         (scores, classes, boxes) = self.session.run([self.scores, self.classes, self.boxes], feed_dict={self.tensor: image_np_expanded})
