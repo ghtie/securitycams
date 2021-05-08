@@ -5,7 +5,7 @@ import PySimpleGUI as sg
 import pathlib
 import glob
 from security import SecuritySystem
-from text import send_message
+#from text import send_message
 
 cam1_src = 0
 cam2_src = 0
