@@ -7,14 +7,16 @@ from human_detection import HumanDetector
 
 
 class FrameAnalyzer:
-    def __init__(self, threshold=50, cam_name="cam1", img_folder='image_captures/', human_detector=HumanDetector()):
+    def __init__(self, threshold=50, cam_name="cam1", img_folder='image_captures/', human_detector=HumanDetector(),
+                 human_approaching_threshold=50000, grouping_period=60):
         # threshold sets the min difference between the avg_img and the current frame
         self.threshold = threshold
         self.cam = cam_name
         self.img_folder = img_folder
         self.avg_img = None
         self.human_detector = human_detector  # ML model for humans detection
-        self.human_approaching_threshold = 50000
+        self.human_approaching_threshold = human_approaching_threshold  # min size of the detected human in frames
+        self.grouping_period = grouping_period  # time period for grouping image captures into folders
 
     def motion_detection(self, img):
         """
@@ -40,36 +42,31 @@ class FrameAnalyzer:
 
     def human_detection(self, img):
         """
-        Uses the model classifier to detect humans in the frames and create image captures
+        Detects for any human motion in the frames
         :param img: current image/frame
         """
         boxes = self.human_detector.detect(img)
         if boxes:
             for i in range(len(boxes)):
-                # DEMO ONLY
-                print("HUMAN DETECTED: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
                 x, y, w, h = boxes[i][1], boxes[i][0], boxes[i][3] - boxes[i][1], boxes[i][2] - boxes[i][0]
                 if self.is_approaching_human(w, h):
                     cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
                     self.save_image(img, time.time())
-                    # DEMO ONLY
-                    print("APPROACHING HUMAN: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
-                else: # DEMO ONLY
-                    print("PASSING HUMAN: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
-        else: # DEMO ONLY
-            print("MOTION DETECTED: " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
     def is_approaching_human(self, w, h):
         """
-        Calculates the area of the bounding box around the detected humans in the frame
-        :return: True if the humans is approaching the camera
+        Detects approaching humans in the frame
+        :param w: width of the bounding box around the detected human
+        :param h: height of the bounding box around the detected human
+        :return: True if the area of the bounding box is greater than the human_approaching_threshold and False otherwise
         """
-        print(w * h)
         return w * h > self.human_approaching_threshold
 
     def save_image(self, img, img_timestamp):
         """
         Saves and groups the images by consecutive movements captured in the videos
+        :param img: current image/frame
+        :param img_timestamp: timestamp of when the image was captured
         """
         # get list of all directories
         dir_list = glob.glob(os.path.join('image_captures/', '*'))
@@ -82,7 +79,7 @@ class FrameAnalyzer:
             recent_dir = max([dir for dir in dir_list], key=os.path.getmtime)
             last_timestamp = float(recent_dir.lstrip().split('/')[-1])
             # create a new folder if more than 60s time passed between the current frame detected and the folder created
-            if folder_timestamp - last_timestamp > 60:
+            if folder_timestamp - last_timestamp > self.grouping_period:
                 os.mkdir(self.img_folder + str(folder_timestamp) + "/")
             else:
                 folder_timestamp = last_timestamp

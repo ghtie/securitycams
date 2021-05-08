@@ -9,10 +9,16 @@ class VideoFrames:
         self.stopped = False
 
     def start(self):
+        """
+        Starts the main thread
+        """
         Thread(target=self.update, args=()).start()
         return self
 
     def update(self):
+        """
+        Gets the frames from the camera
+        """
         while not self.stopped:
             if not self.ret:
                 self.stop()
@@ -20,4 +26,7 @@ class VideoFrames:
                 self.ret, self.frame = self.cam.read()
 
     def stop(self):
+        """
+        Stops the main thread
+        """
         self.stopped = True

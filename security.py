@@ -19,14 +19,21 @@ class SecuritySystem:
         self.analyzer_2 = FrameAnalyzer(cam_name="cam2", img_folder=img_folder, human_detector=self.human_detector)
 
         self.stopped = False
+        # Start surveillance system
         self.thread = threading.Thread(target=self.start_surveillance, args=()).start()
 
     def stop_surveillance(self):
+        """
+        Starts the surveillance system and human motion detection
+        """
         self.cam_1.stop()
         self.cam_2.stop()
         self.stopped = True
 
     def start_surveillance(self):
+        """
+        Stops the surveillance system and human motion detection
+        """
         while not self.stopped:
             # Camera frames
             frame1 = self.cam_1.frame

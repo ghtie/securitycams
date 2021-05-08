@@ -11,6 +11,11 @@ human_detector = HumanDetector()
 # HUMAN VS NONHUMAN DATASET: https://www.kaggle.com/aliasgartaksali/human-and-non-human
 # HUMANS WITH MASKS DATASET: https://www.kaggle.com/bikashjaiswal/dataset-for-mask-nonmask-and-nonhuman-classes
 def create_labels(source_dir, label_file):
+    """
+    Creates a CSV file of each image file name and it's corresponding image classification
+    :param source_dir: directory path of the image folder
+    :param label_file: file path of the csv
+    """
     dir_list = ["non-humans", "humans"]
     with open(label_file, 'w') as file:
         writer = csv.DictWriter(file, fieldnames=['filename', 'label'])
@@ -20,15 +25,24 @@ def create_labels(source_dir, label_file):
                 writer.writerow({'filename': f, 'label': i})
 
 
-# Create a 2D array of each image and its classification: 0 = nonhuman, 1 = humans
 def create_tables(labels_file):
+    """
+    Creates a 2D array of each image and its classification: 0 = nonhuman, 1 = humans
+    :param labels_file: path to the csv label file
+    :return: 2D numpy array of each image file name and classification
+    """
     file = open(labels_file, 'r')
     reader = csv.reader(file, delimiter=',')
     return np.array([row for row in reader])
 
 
-# Print out confusion matrix for both datasets
 def create_summary(table_list, img_dir_list, summary_file):
+    """
+    Prints out the accuracy and precision of the model
+    :param table_list: 2D numpy array of each image file name and classification
+    :param img_dir_list: directory path to the image folder
+    :param summary_file: path to the summary/output text file
+    """
     for (table, img_dir) in zip(table_list, img_dir_list):
         # shuffle dataset
         np.random.shuffle(table)
