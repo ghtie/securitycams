@@ -7,14 +7,14 @@ from human_detection import HumanDetector
 
 
 class FrameAnalyzer:
-    def __init__(self, threshold=30, cam_name="cam1", img_folder='image_captures/', human_detector=HumanDetector()):
+    def __init__(self, threshold=20, cam_name="cam1", img_folder='image_captures/', human_detector=HumanDetector()):
         # threshold sets the min difference between the avg_img and the current frame
         self.threshold = threshold
         self.cam = cam_name
         self.img_folder = img_folder
         self.avg_img = None
         self.human_detector = human_detector  # ML model for human detection
-        self.human_approaching_threshold = 30000
+        self.human_approaching_threshold = 40000
 
     def motion_detection(self, img):
         """

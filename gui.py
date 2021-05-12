@@ -30,7 +30,7 @@ def check_new_folder(window, folders_old, folders_new):
         message = 'Detected motion at ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(l)))
         window["LOG"].print(message)
         # uncomment when you want to send texts
-        send_message(message)
+        #send_message(message)
 
 
 def main():
@@ -72,6 +72,8 @@ def main():
     frame_size = (camera_width, camera_height)
     video_capture = VideoFrames(cam1_src).start()
     video_capture2 = VideoFrames(cam2_src).start()
+    # video_capture = cv2.VideoCapture('cam1.mp4')
+    # video_capture2 = cv2.VideoCapture('cam2.mov')
     time.sleep(2.0)
 
     # Start the surveillance system
@@ -90,8 +92,10 @@ def main():
 
         # get camera frame
         frame_orig = video_capture.frame
+        #ret, frame_orig = video_capture.read()
         frame = cv2.resize(frame_orig, frame_size)
         frame_orig2 = video_capture2.frame
+        #ret2, frame_orig2 = video_capture2.read()
         frame2 = cv2.resize(frame_orig2, frame_size)
 
         if (display_fps == True) and (time.time() - start_time) > 0:
@@ -125,6 +129,8 @@ def main():
 
     video_capture.stop()
     video_capture2.stop()
+    # video_capture.release()
+    # video_capture2.release()
     cv2.destroyAllWindows()
 
 
