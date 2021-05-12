@@ -43,9 +43,9 @@ def check_new_folder(window, folders_old, folders_new):
         l = dir.split('.')[0] # folder name is epoch millis, ignore ns
 
         message = 'Detected motion at ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(l)))
-        window["LOG"].print(message) # log message to window
+        window["LOG"].print(message)  # log message to window
 
-        send_message(message) # send twillio message
+        #send_message(message)  # send twilio message
 
 
 def main():
