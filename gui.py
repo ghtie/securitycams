@@ -12,24 +12,40 @@ cam2_src = 0
 
 
 def log_past_movement(window, folders):
+    """
+    Log all instances of motion in motion log
+    :param window: PySimpleGUI top level window frame
+    :param folders: set of folders in /images_captures dir
+    """
     directory = pathlib.Path().absolute() / 'image_captures'
     for dir in folders:
-        dt = directory / dir
+        dt = directory / dir # absolute path to individual motion folder
         onlyfiles = [os.path.basename(x) for x in glob.glob(str(dt) + "/*.jpg")]
+
+        # list of times of frames present within motion folder
         times = [time.localtime(int(f.split('_')[1].split('.')[0])) for f in onlyfiles]
+
+        # log when motion began and ended
         minimum = time.strftime('%Y-%m-%d %H:%M:%S', min(times))
         maximum = time.strftime('%Y-%m-%d %H:%M:%S', max(times))
         window["LOG"].print('Detected motion from ' + str(minimum) + ' to ' + str(maximum))
 
 
 def check_new_folder(window, folders_old, folders_new):
-    directory = pathlib.Path().absolute() / 'image_captures'
-    for dir in (folders_new - folders_old):
-        l = dir.split('.')[0]
+    """
+    Checks if new folder to store motion images has been created, if yes log the
+    motion and send a message through Twillio
+    :param window: PySimpleGUI top level window frame
+    :param folders_old: Set of folder names from the previous GUI loop
+    :param folders_new: Set of folder names from the current GUI loop
+    """
+    for dir in (folders_new - folders_old): # iterate over set difference
+        l = dir.split('.')[0] # folder name is epoch millis, ignore ns
+
         message = 'Detected motion at ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(l)))
-        window["LOG"].print(message)
-        # uncomment when you want to send texts
-        #send_message(message)
+        window["LOG"].print(message) # log message to window
+
+        send_message(message) # send twillio message
 
 
 def main():
@@ -112,6 +128,7 @@ def main():
         check_new_folder(window, folders, folders_new)
         folders = folders_new
 
+    # clean up
     security_sys.stop_surveillance()
     video_capture.release()
     video_capture2.release()

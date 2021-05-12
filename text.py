@@ -8,9 +8,12 @@ auth_token = os.environ['TWILIO_AUTH_TOKEN']
 
 client = Client(account_sid, auth_token)
 
-
 def send_message(message):
+    """
+    Send an SMS text message through twillio
+    :param message: string message to send
+    """
     client.api.account.messages.create(
-        to="+14193448709",
-        from_="+13059210617",
+        to="phone number to receive messages",
+        from_="twillio issued phone number",
         body=message)
