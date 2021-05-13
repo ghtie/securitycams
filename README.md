@@ -2,7 +2,7 @@
 ECSE 488 Surveillance System
 
 ## Project Overview
-The contents of this zip folder include all of the source code for our surveillance camera system. Our system only utilizes 2 USB cameras. The main file to run our surveillance system is gui.py.
+The contents of this directory include all the source code for our surveillance camera system. Our system only utilizes 2 USB cameras. The main file to run our surveillance system is gui.py.
 
 ### Gui.py
 Runs our surveillance system GUI 
@@ -12,6 +12,9 @@ Uses multithreading to retrieve frames from each camera
 
 ### Security.py
 Runs the backend of our surveillance system 
+
+### Model.pb
+The saved Tensorflow DNN model from OpenVINO's human detection model. Source: https://docs.openvinotoolkit.org/latest/omz_models_model_ssd_mobilenet_v2_coco.html
 
 ### Human_detection.py
 Loads the human detection model and outputs the model's classification, confidence scores, and detection boxes for humans in images
