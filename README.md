@@ -40,9 +40,11 @@ Contains the summary of the human detection model experiments.
 
 ### `source venv/bin/activate`
 
-### 3. Install the following package in your environment:
+### 3. Install the following packages in your environment:
 
 ### `(venv) $ pip install opencv-python`
+### `(venv) $ pip install pysimplegui`
+### `(venv) $ pip install tensorflow`
 
 ### 4. Exit out of the virtual environment. 
 To run the code, in the command line paste the following:
